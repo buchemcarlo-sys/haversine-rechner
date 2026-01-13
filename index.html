@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Haversine Rechner</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; background-color: #f4f4f9; }
+        h2 { text-align: center; color: #333; }
+        label { display: block; margin-top: 10px; font-weight: bold; color: #555; }
+        input { width: 100%; padding: 12px; margin: 5px 0 15px 0; box-sizing: border-box; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; }
+        button { width: 100%; padding: 15px; background-color: #007BFF; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: background 0.3s; }
+        button:hover { background-color: #0056b3; }
+        .result { margin-top: 25px; padding: 15px; background: white; border-radius: 8px; text-align: center; font-size: 1.2em; border: 1px solid #ddd; min-height: 1.2em; color: #333; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+
+    <h2>🌍 Haversine Rechner</h2>
+
+    <label>Latitude Ort 1:</label>
+    <input type="text" id="lat1" placeholder="z.B. 48.1351">
+
+    <label>Longitude Ort 1:</label>
+    <input type="text" id="lon1" placeholder="z.B. 11.5820">
+
+    <label>Latitude Ort 2:</label>
+    <input type="text" id="lat2" placeholder="z.B. 52.5200">
+
+    <label>Longitude Ort 2:</label>
+    <input type="text" id="lon2" placeholder="z.B. 13.4050">
+
+    <button onclick="calculate()">Entfernung berechnen</button>
+
+    <div class="result" id="output">Ergebnis erscheint hier...</div>
+
+    <script>
+        function parseInput(text) {
+            if (!text) return NaN;
+            let cleanText = text.replace(',', '.');
+            return parseFloat(cleanText);
+        }
+
+        function calculate() {
+            const R = 6371.0; 
+            let lat1 = parseInput(document.getElementById('lat1').value);
+            let lon1 = parseInput(document.getElementById('lon1').value);
+            let lat2 = parseInput(document.getElementById('lat2').value);
+            let lon2 = parseInput(document.getElementById('lon2').value);
+
+            if (isNaN(lat1) || isNaN(lon1) || isNaN(lat2) || isNaN(lon2)) {
+                let out = document.getElementById('output');
+                out.innerText = "❌ Fehler: Bitte alle Felder mit Zahlen ausfüllen!";
+                out.className = "result error";
+                return;
+            }
+
+            let dLat = (lat2 - lat1) * (Math.PI / 180);
+            let dLon = (lon2 - lon1) * (Math.PI / 180);
+            let rLat1 = lat1 * (Math.PI / 180);
+            let rLat2 = lat2 * (Math.PI / 180);
+
+            let a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                    Math.cos(rLat1) * Math.cos(rLat2) *
+                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            
+            let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            let distance = R * c;
+
+            let out = document.getElementById('output');
+            out.className = "result"; 
+            out.innerText = "✅ Entfernung: " + distance.toFixed(2) + " km";
+        }
+    </script>
+</body>
+</html>
